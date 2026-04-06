@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, LogOut, Calendar as CalendarIcon } from 'luc
 import { authService } from '../services/auth.service';
 import { User } from 'firebase/auth';
 import { BookingModal } from '../components/BookingModal';
+import { BookingDetailModal } from '../components/BookingDetailModal';
 import { StatsSidebar } from '../components/StatsSidebar';
 import { bookingService, BookingPayload } from '../services/booking.service';
 
@@ -14,6 +15,7 @@ export const CalendarPage: React.FC<Props> = ({ user }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date()); 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedBooking, setSelectedBooking] = useState<BookingPayload | null>(null);
   
   // Realtime Database Lịch Đặt Phòng
   const [bookings, setBookings] = useState<BookingPayload[]>([]);
@@ -94,7 +96,14 @@ export const CalendarPage: React.FC<Props> = ({ user }) => {
              
              {/* RENDER MẢNG BOOKING LIVE TỪ FIREBASE ĐÂY RỒI! */}
              {daysBookings.map((b) => (
-               <div key={b.id} className={`text-[10px] font-bold py-1 px-1.5 rounded border-l-2 truncate shadow-sm ${renderTitleUI(b.purpose)} ${isPast ? 'opacity-40' : ''}`}>
+               <div 
+                 key={b.id} 
+                 onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedBooking(b);
+                 }}
+                 className={`text-[10px] font-bold py-1 px-1.5 rounded border-l-2 truncate shadow-sm transition-transform hover:-translate-y-0.5 cursor-pointer hover:shadow-md ${renderTitleUI(b.purpose)} ${isPast ? 'opacity-40' : ''}`}
+               >
                  {formatTime(b.startTime)} - {b.title}
                </div>
              ))}
@@ -109,6 +118,10 @@ export const CalendarPage: React.FC<Props> = ({ user }) => {
     <div className="max-w-[1500px] mx-auto p-4 md:p-8 min-h-screen text-slate-800 flex flex-col gap-6">
       {isModalOpen && (
         <BookingModal user={user} selectedDate={selectedDate} onClose={() => setIsModalOpen(false)} onSuccess={() => setIsModalOpen(false)} />
+      )}
+      
+      {selectedBooking && (
+        <BookingDetailModal booking={selectedBooking} currentUser={user} onClose={() => setSelectedBooking(null)} />
       )}
 
       {/* HEADER */}

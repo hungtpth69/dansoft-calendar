@@ -65,5 +65,14 @@ export const bookingService = {
         if (onError) onError(error);
       }
     );
+  },
+
+  /**
+   * Xóa Booking
+   */
+  async deleteBooking(bookingId: string) {
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    const docRef = doc(db, 'bookings', bookingId);
+    await deleteDoc(docRef);
   }
 };

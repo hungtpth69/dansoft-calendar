@@ -41,7 +41,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const bookings = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as any));
-    
+
     // Gom nhóm các cuộc họp theo từng email người tham dự
     const userAggr: Record<string, { name: string, meetings: any[] }> = {};
 
@@ -49,14 +49,14 @@ export default async function handler(req: any, res: any) {
       const inviteesMap = booking.invitees || {};
       for (const key of Object.keys(inviteesMap)) {
         const invitee = inviteesMap[key];
-        
+
         // Cứ có tham gia là gom nhóm (Chưa gửi bao giờ)
         if (!invitee.isReminderSent) {
-           if (!userAggr[invitee.email]) {
-              userAggr[invitee.email] = { name: invitee.name, meetings: [] };
-           }
-           // Đẩy cuộc họp vào mảng của user đó
-           userAggr[invitee.email].meetings.push({ bookingId: booking.id, inviteeKey: key, ...booking });
+          if (!userAggr[invitee.email]) {
+            userAggr[invitee.email] = { name: invitee.name, meetings: [] };
+          }
+          // Đẩy cuộc họp vào mảng của user đó
+          userAggr[invitee.email].meetings.push({ bookingId: booking.id, inviteeKey: key, ...booking });
         }
       }
     }
@@ -68,13 +68,13 @@ export default async function handler(req: any, res: any) {
     // Gửi email tổng hợp cho mỗi nhân viên
     for (const email of Object.keys(userAggr)) {
       const user = userAggr[email];
-      
+
       // Sắp xếp lịch họp theo giờ từ sáng đến chiều
       user.meetings.sort((a, b) => a.startTime - b.startTime);
 
       const htmlMeetingsList = user.meetings.map(m => `
         <li style="margin-bottom: 12px; padding: 10px; background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 4px;">
-          <strong>${new Date(m.startTime).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})} - ${new Date(m.endTime).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}</strong><br/>
+          <strong>${new Date(m.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} - ${new Date(m.endTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</strong><br/>
           <span style="color: #1e293b; font-size: 16px;">Phòng: ${m.title}</span><br/>
           <span style="color: #64748b; font-size: 14px;">Mục đích: ${m.purpose} | Host: ${m.organizerName}</span>
         </li>
@@ -82,7 +82,7 @@ export default async function handler(req: any, res: any) {
 
       try {
         await resend.emails.send({
-          from: 'DanSoft Calendar <onboarding@resend.dev>', // Đổi qua email thật sau khi xác minh domain
+          from: 'DanSoft Bot <no-reply@danishsoftware.com>',
           to: [email],
           subject: '[Thông Báo] Lịch họp tổng quan ngày hôm nay của bạn',
           html: `
@@ -96,17 +96,17 @@ export default async function handler(req: any, res: any) {
             </div>
           `
         });
-        
+
         mailsSent++;
-        
+
         // Đánh dấu là đã gửi thành công cho mỗi booking
         for (const m of user.meetings) {
-            documentUpdates.add(m.bookingId);
-            if (!docUpdatesMap[m.bookingId]) {
-               docUpdatesMap[m.bookingId] = m.invitees; // Lấy dữ liệu nguyên gôc
-            }
-            // Đánh dấu người này đã nhận
-            docUpdatesMap[m.bookingId][m.inviteeKey].isReminderSent = true;
+          documentUpdates.add(m.bookingId);
+          if (!docUpdatesMap[m.bookingId]) {
+            docUpdatesMap[m.bookingId] = m.invitees; // Lấy dữ liệu nguyên gôc
+          }
+          // Đánh dấu người này đã nhận
+          docUpdatesMap[m.bookingId][m.inviteeKey].isReminderSent = true;
         }
 
       } catch (err) {
@@ -116,13 +116,13 @@ export default async function handler(req: any, res: any) {
 
     // Tiến hành Update Firebase Docs
     for (const bookingId of Array.from(documentUpdates)) {
-        await updateDoc(doc(db, 'bookings', bookingId), {
-           invitees: docUpdatesMap[bookingId]
-        });
+      await updateDoc(doc(db, 'bookings', bookingId), {
+        invitees: docUpdatesMap[bookingId]
+      });
     }
-    
+
     return res.status(200).json({ status: 'ok', mailsSent, usersNotified: Object.keys(userAggr).length });
-    
+
   } catch (err: any) {
     console.error("Vercel Cron Error:", err);
     return res.status(500).json({ error: err.message });
