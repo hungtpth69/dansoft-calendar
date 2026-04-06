@@ -30,6 +30,7 @@ Khi đóng vai trò Development Manager, bạn là người chịu trách nhiệ
 5. **Defensive Programming (Chống Crash & Business UX):**
    - **Firebase Timestamps:** Tuyệt đối không bao giờ gọi thẳng `.toDate()` lên thuộc tính của Firestore objects trả về từ Lịch/OnSnapshot. Data của thế giới thực có thể lẫn tạp chất (milliseconds number từ realtime legacy, hoặc Date object rác). Phải LUÔN sử dụng Helper check: `typeof attr.toDate === 'function' ? attr.toDate() : new Date(...)`.
    - **Xử lý Thời gian Lịch (Calendar Normalization):** Khi click vào 1 ngày trên FullCalendar lưới Month View, API trả về All-day (Khoảng cách 24 tiếng sang ngày hôm sau). Cấm bê nguyên data này vào Form Đặt Lịch vì nó sai nghiệp vụ cuộc họp. Luôn override Start-End mặc định cách nhau **1 Tiếng** (Vào lúc khoảng 09:00 AM).
+   - **TypeScript Strict Safety:** Tuyệt đối để ý các biến mang type liên hợp `string | null` (như các field nullable từ Firestore). Khi gán các biến này vào hàm `SetStateAction` của React Hook hoặc gài thuộc tính native DOM (VD thẻ `<a href={}>`), BẮT BUỘC phải Fallback type cụ thể (Ví dụ `myState(val || '')` hoặc `href={val || undefined}`). Tránh việc vô tình làm hỏng Node runtime khi Build (`tsc -b`).
    - Bắt các lỗi API văng ra, không cho phép lỗi Console giết chết UI (White Screen).
 
 ## Checklist hành động khi được gọi với Role Dev Manager

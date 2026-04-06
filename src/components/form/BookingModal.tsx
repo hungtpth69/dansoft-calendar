@@ -58,7 +58,7 @@ export default function BookingModal() {
       const existing = bookings.find(b => b.id === selectedBookingId);
       if (existing) {
         setTitle(existing.title);
-        setLocationType(existing.roomId);
+        setLocationType(existing.roomId || 'dansoft_lab');
         setMeetLink(existing.meetLink || '');
         setParticipants(existing.participants || []);
         setErrorParams('');

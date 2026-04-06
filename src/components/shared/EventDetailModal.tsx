@@ -89,7 +89,7 @@ export default function EventDetailModal() {
               {booking.type === 'online' ? (
                 <div className="flex items-center gap-2">
                   <LinkIcon className="w-4 h-4 text-blue-500" />
-                  <a href={booking.meetLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 hover:underline font-medium break-all">
+                  <a href={booking.meetLink || undefined} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 hover:underline font-medium break-all">
                     {booking.meetLink}
                   </a>
                 </div>
