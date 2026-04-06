@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { authService } from '../services/auth.service';
 
