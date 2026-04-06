@@ -1,0 +1,31 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Cho phép tất cả user đã login được quyền đọc TOÀN BỘ database
+    match /{document=**} {
+      allow read: if isAuthenticated();
+    }
+
+    // Đơn giản hóa: Bất kì user authenticated nào cũng có thể CRUD cho users và rooms
+    match /users/{userId} {
+      allow write: if isAuthenticated();
+    }
+    
+    match /rooms/{roomId} {
+      allow write: if isAuthenticated();
+    }
+    
+    // Đối với Lịch: Mọi người tùy ý tạo, nhưng Sửa/Xóa phải đối chiếu hostId
+    match /bookings/{bookingId} {
+      allow create: if isAuthenticated();
+      // "user có thể crud thoải mái ( với phòng/cuộc họp host của mình mà thôi )"
+      allow update, delete: if isAuthenticated() && resource.data.hostId == request.auth.uid;
+    }
+  }
+}

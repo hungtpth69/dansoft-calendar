@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #020817;
+    --primary: #4F46E5; /* Indigo/Violet style */
+    --primary-foreground: #ffffff;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-[#F4F7FB] text-slate-800 font-sans; /* Background soft */
+  }
+}
+
+/* -------------------------------------
+   FULLCALENDAR PREMIUM UI OVERRIDES (Soft & Rounded)
+   ------------------------------------- */
+
+.fc {
+  font-family: inherit !important;
+  --fc-border-color: #E2E8F0;
+  --fc-daygrid-event-dot-width: 8px;
+}
+
+/* Ẩn bớt border thô thiển */
+.fc-theme-standard td, .fc-theme-standard th {
+  border-color: transparent !important;
+}
+.fc-scrollgrid {
+  border: none !important;
+}
+
+/* Thể hiện Border của từng Cell trong Calendar và bo góc nhẹ */
+.fc .fc-daygrid-day-frame {
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  margin: 4px; /* Giãn khoảng cách giữa các cell */
+  padding: 4px;
+  transition: all 0.2s ease;
+  background-color: transparent;
+}
+.fc .fc-daygrid-day-frame:hover {
+  background-color: #F8FAFC;
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+}
+
+/* Căn chỉnh text ngày */
+.fc .fc-daygrid-day-top {
+  flex-direction: row;
+  padding: 4px;
+}
+.fc-daygrid-day-number {
+  font-weight: 700;
+  color: #334155;
+  font-size: 0.875rem;
+}
+
+/* Styling khung các thứ trong tuần (Mon, Tue,..) */
+.fc-col-header-cell-cushion {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #64748B;
+  padding: 12px 0 !important;
+}
+
+/* Nổi bật ngày hiện tại (Today) */
+.fc .fc-day-today .fc-daygrid-day-frame {
+  border: 2px solid #3B82F6 !important;
+  background-color: #EFF6FF !important;
+}
+
+/* Format Event Pills (Cảm hứng từ Premium Minimalist UI) */
+.fc-event {
+  cursor: pointer !important;
+  border-radius: 6px !important;
+  border: none !important;
+  padding: 4px 6px !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  margin-bottom: 4px !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease !important;
+}
+
+/* Ẩn cục Dot mặc định của thư viện vì quá xấu */
+.fc-daygrid-event-dot {
+  display: none !important;
+}
+
+/* Cụm màu sắc siêu tinh giản (Thanh accent bên trái) */
+.event-online {
+  background-color: #F8F5FF !important; /* Trắng tím rất mờ */
+  border-left: 3px solid #C4A5FE !important; /* Highlight Bar */
+  color: #A78BFA !important; /* Phông chữ tiệp màu */
+}
+
+.event-offline {
+  background-color: #FFF6F7 !important; /* Trắng hồng rất mờ */
+  border-left: 3px solid #FDA4AF !important; 
+  color: #FB7185 !important;
+}
+
+.fc-event:hover {
+  transform: scale(1.02);
+  filter: brightness(0.97);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+  z-index: 10 !important;
+}
+
+/* Ẩn Toolbar mặc định vì ta sẽ tự build Header riêng (shadcn) */
+.fc-header-toolbar {
+  display: none !important;
+}
